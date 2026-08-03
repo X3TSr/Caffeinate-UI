@@ -131,8 +131,8 @@ public final class CaffeinateController: ObservableObject {
             let launched = try launcher.launch(
                 executable: CaffeinateCommand.executableURL,
                 arguments: arguments
-            ) { [weak self] status in
-                Task { @MainActor in
+            ) { status in
+                Task { @MainActor [weak self] in
                     self?.handleProcessExit(status: status, generation: launchGeneration)
                 }
             }
@@ -261,8 +261,10 @@ public final class CaffeinateController: ObservableObject {
     private func startTicking() {
         stopTicking()
         tick = clock()
-        let timer = Timer(timeInterval: 1, repeats: true) { [weak self] _ in
-            Task { @MainActor in
+        // Timer's block is @Sendable, so the weak capture belongs to the Task —
+        // capturing it outside would make it a var read from concurrent code.
+        let timer = Timer(timeInterval: 1, repeats: true) { _ in
+            Task { @MainActor [weak self] in
                 self?.handleTick()
             }
         }

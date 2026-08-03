@@ -73,7 +73,10 @@ public struct CaffeinateOptions: Codable, Equatable, Hashable, Sendable {
 
 /// Metadata used to render the option toggles, so the UI never hardcodes flag
 /// names or help text.
-public struct CaffeinateOptionDescriptor: Identifiable, Sendable {
+///
+/// Not `Sendable`: it carries a `WritableKeyPath`, which is not. These only
+/// ever live on the main actor, driving the UI.
+public struct CaffeinateOptionDescriptor: Identifiable {
     public let id: String
     public let flag: String
     public let title: String
