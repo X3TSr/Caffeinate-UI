@@ -1,0 +1,51 @@
+name: CodeQL
+
+# Static analysis of the Swift sources.
+#
+# NOTE: code scanning is free for public repositories only. While this repo is
+# private this workflow will fail on the upload step with "Advanced Security
+# must be enabled". Make the repository public first, or delete this file.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Weekly, off the hour so it does not pile onto everyone else's cron.
+    - cron: "37 5 * * 2"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    name: Analyze Swift
+    runs-on: macos-14
+    timeout-minutes: 30
+    permissions:
+      # Required to upload the results to the Security tab.
+      security-events: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Initialise CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: swift
+          # Manual rather than autobuild: the package builds with one command,
+          # and being explicit avoids autobuild guessing at scripts/build.sh.
+          build-mode: manual
+
+      - name: Build
+        run: swift build
+
+      - name: Analyse
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: /language:swift
