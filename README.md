@@ -6,6 +6,7 @@
 
 Keep your Mac awake for a set amount of time, with one click — and see exactly how long is left.
 
+[![CI](https://github.com/X3TSr/Caffeinate-UI/actions/workflows/ci.yml/badge.svg)](https://github.com/X3TSr/Caffeinate-UI/actions/workflows/ci.yml)
 ![platform](https://img.shields.io/badge/platform-macOS%2013%2B-lightgrey)
 ![swift](https://img.shields.io/badge/Swift-5.9-orange)
 ![license](https://img.shields.io/badge/license-MIT-blue)
@@ -226,6 +227,13 @@ Ideas for after V1 — see [docs/ROADMAP.md](docs/ROADMAP.md) for the full list.
 - "Keep awake until this app quits" (`caffeinate -w <pid>`)
 - Schedules ("every weekday 9–6") and battery-level guards
 - Homebrew cask
+
+## Security
+
+The app spawns one process (`/usr/bin/caffeinate`), makes no network
+connections, installs no daemon or helper, and needs no elevated privileges.
+[SECURITY.md](SECURITY.md) has the full threat model and how to report a
+vulnerability privately.
 
 ## License
 

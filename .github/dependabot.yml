@@ -1,0 +1,15 @@
+version: 2
+
+updates:
+  # The app itself has no third-party dependencies, so CI actions are the whole
+  # supply chain surface.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: tuesday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: ci
+    labels:
+      - dependencies
