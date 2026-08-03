@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Swift version
+        run: swift --version
+
+      - name: Build
+        run: swift build --build-tests
+
+      - name: Test
+        run: swift test
+
+  bundle:
+    name: Build app bundle
+    runs-on: macos-14
+    steps:
+      # Full history so CFBundleVersion (the commit count) is meaningful.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build Caffeinate UI.app
+        run: ./scripts/build.sh --universal
+
+      - name: Verify the bundle
+        run: |
+          APP="build/Caffeinate UI.app"
+          test -x "$APP/Contents/MacOS/CaffeinateUI"
+          test -f "$APP/Contents/Resources/AppIcon.icns"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$APP/Contents/Info.plist"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$APP/Contents/Info.plist"
+          lipo -info "$APP/Contents/MacOS/CaffeinateUI"
+          codesign --verify --verbose "$APP"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Caffeinate-UI-app
+          path: build/Caffeinate UI.app
+          if-no-files-found: error
