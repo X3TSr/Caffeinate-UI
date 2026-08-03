@@ -1,8 +1,10 @@
 name: CI
 
 on:
+  # Only the default branch on push — pull_request already covers branches with
+  # an open PR, and listening to both fires two identical runs per push.
   push:
-    branches: ["**"]
+    branches: [main]
   pull_request:
   workflow_dispatch:
 

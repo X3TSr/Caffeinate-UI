@@ -16,14 +16,19 @@ final class AppEnvironment: ObservableObject {
     private let notifications = NotificationManager.shared
     private var windowObservers: [NSObjectProtocol] = []
 
+    /// Dependencies default to `nil` rather than to real instances: a default
+    /// parameter expression is evaluated in a nonisolated context, so calling a
+    /// `@MainActor` initializer there is an error. Building them in the body
+    /// keeps injection available for tests without that problem.
     init(
-        controller: CaffeinateController = CaffeinateController(),
-        preferences: Preferences = Preferences(),
-        loginItem: LoginItemManager = LoginItemManager()
+        controller: CaffeinateController? = nil,
+        preferences: Preferences? = nil,
+        loginItem: LoginItemManager? = nil
     ) {
+        let controller = controller ?? CaffeinateController()
         self.controller = controller
-        self.preferences = preferences
-        self.loginItem = loginItem
+        self.preferences = preferences ?? Preferences()
+        self.loginItem = loginItem ?? LoginItemManager()
 
         controller.onSessionEnded = { [weak self] session, reason in
             self?.handleSessionEnded(session, reason: reason)
