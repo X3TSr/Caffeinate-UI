@@ -22,7 +22,7 @@ jobs:
     name: Test
     runs-on: macos-14
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # Don't leave the job token in .git/config; nothing here pushes.
           persist-credentials: false
@@ -41,7 +41,7 @@ jobs:
     runs-on: macos-14
     steps:
       # Full history so CFBundleVersion (the commit count) is meaningful.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           persist-credentials: false
