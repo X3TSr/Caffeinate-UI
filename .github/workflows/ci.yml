@@ -59,7 +59,7 @@ jobs:
           lipo -info "$APP/Contents/MacOS/CaffeinateUI"
           codesign --verify --verbose "$APP"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: Caffeinate-UI-app
           path: build/Caffeinate UI.app
