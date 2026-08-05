@@ -21,6 +21,9 @@ jobs:
   test:
     name: Test
     runs-on: macos-14
+    # A pull request from a fork runs its own code here. Bound the job so an
+    # abusive PR cannot sit on a runner for the default six hours.
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
         with:
@@ -39,6 +42,14 @@ jobs:
   bundle:
     name: Build app bundle
     runs-on: macos-14
+    timeout-minutes: 25
+    # Skipped for pull requests from forks: this job runs scripts/build.sh, and
+    # a fork controls that file's contents. External contributors still get the
+    # Test job, which builds and runs the full suite — the real signal. The
+    # bundle is verified on every push to main and before any release.
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
     steps:
       # Full history so CFBundleVersion (the commit count) is meaningful.
       - uses: actions/checkout@v7

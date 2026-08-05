@@ -89,3 +89,24 @@ If `pgrep` shows flags you did not choose in the UI, that is worth reporting.
 The package has **zero third-party dependencies** — Swift, SwiftUI, AppKit and
 the system `caffeinate` binary only. The only supply chain surface is the
 GitHub Actions used in CI, which Dependabot watches.
+
+## CI and pull requests from forks
+
+On a public repository, a pull request runs the workflows in *this* repo against
+the *contributor's* code. The posture here:
+
+- **No secrets are used by any workflow.** There is nothing for a malicious PR
+  to exfiltrate.
+- **`GITHUB_TOKEN` is restricted to `contents: read`**, and `checkout` runs with
+  `persist-credentials: false`, so no writable credential reaches the runner.
+- **Jobs have `timeout-minutes` set**, so an abusive PR cannot occupy a runner
+  for the six hour default.
+- **The bundle job is skipped for fork pull requests**, because it executes
+  `scripts/build.sh`, which the fork controls. Fork PRs still run the full test
+  job.
+- **`pull_request_target` is deliberately not used** anywhere. It would run
+  fork code with access to the base repository's context.
+
+Repository setting to match: **Settings → Actions → General → Fork pull request
+workflows → require approval for all external contributors.** The default only
+gates first-time contributors.
